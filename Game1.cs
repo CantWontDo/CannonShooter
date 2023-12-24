@@ -112,7 +112,7 @@ namespace CannonShooter
                 Exit();
 
             // TODO: Add your update logic here
-
+            ProcessInput();
             base.Update(gameTime);
         }
 
@@ -128,7 +128,47 @@ namespace CannonShooter
             {
                 _players[_currentPlayer].Angle += 0.01f;
             }
+
+            if (_players[_currentPlayer].Angle >= MathHelper.PiOver2)
+            {
+                _players[_currentPlayer].Angle = MathHelper.PiOver2;
+            }
+
+            if (_players[_currentPlayer].Angle <= -MathHelper.PiOver2)
+            {
+                _players[_currentPlayer].Angle = -MathHelper.PiOver2;
+            }
+
+            if(keyboardState.IsKeyDown(Keys.Down))
+            {
+                _players[_currentPlayer].Power--;
+            }
+            if(keyboardState.IsKeyDown(Keys.Up))
+            {
+                _players[_currentPlayer].Power++;
+            }
+
+            if(Keyboard.GetState().IsKeyDown(Keys.Down) && keyboardState.IsKeyDown(Keys.LeftShift))
+            {
+                _players[_currentPlayer].Power -= 20;
+            }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Up) && keyboardState.IsKeyDown(Keys.LeftShift))
+            {
+                _players[_currentPlayer].Power += 20;
+            }
+
+            if (_players[_currentPlayer].Power >= 1000)
+            {
+                _players[_currentPlayer].Power = 1000;
+            }
+
+            if (_players[_currentPlayer].Power <= 0)
+            {
+                _players[_currentPlayer].Power = 0;
+            }
         }
+
 
         protected override void Draw(GameTime gameTime)
         {
