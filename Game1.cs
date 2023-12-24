@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 
 namespace CannonShooter
 {
@@ -24,6 +25,8 @@ namespace CannonShooter
 
         private Texture2D _carriageTexture;
         private Texture2D _cannonTexture;
+
+        private SpriteFont _renogare;
 
         private int _screenWidth;
         private int _screenHeight;
@@ -95,6 +98,8 @@ namespace CannonShooter
 
             _carriageTexture = Content.Load<Texture2D>("carriage");
             _cannonTexture = Content.Load<Texture2D>("cannon");
+
+            _renogare = Content.Load<SpriteFont>("renogare");
 
             _screenHeight = _graphics.PreferredBackBufferHeight;
             _screenWidth = _graphics.PreferredBackBufferWidth;
@@ -178,6 +183,15 @@ namespace CannonShooter
             _spriteBatch.Begin();
             DrawScenery();
             DrawPlayers();
+
+            PlayerData currentPlayer = _players[_currentPlayer];
+            float angle = (float)Math.Round(MathHelper.ToDegrees(currentPlayer.Angle));
+            float power = currentPlayer.Power;
+
+            DrawText("Power: " + power, new Vector2(20, 20), currentPlayer.PlayerColor);
+
+            DrawText("Angle: " + angle, new Vector2(20, 60), currentPlayer.PlayerColor);
+
             _spriteBatch.End();
             base.Draw(gameTime);
         }
@@ -206,6 +220,11 @@ namespace CannonShooter
 
                 }
             }
+        }
+
+        private void DrawText(string message, Vector2 position, Color textColor)
+        {
+            _spriteBatch.DrawString(_renogare, message, position, textColor);
         }
     }
 }
