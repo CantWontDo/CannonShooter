@@ -26,6 +26,15 @@ namespace CannonShooter
         private Texture2D _carriageTexture;
         private Texture2D _cannonTexture;
 
+        private Texture2D _rocketTexture;
+
+        private bool _rocketFlying = false;
+        private Vector2 _rocketPosition;
+        private Vector2 _rocketDirection;
+        private float _rocketAngle;
+        private float _rocketScaling = 0.1f;
+
+
         private SpriteFont _renogare;
 
         private int _screenWidth;
@@ -98,6 +107,8 @@ namespace CannonShooter
 
             _carriageTexture = Content.Load<Texture2D>("carriage");
             _cannonTexture = Content.Load<Texture2D>("cannon");
+
+            _rocketTexture = Content.Load<Texture2D>("rocket");
 
             _renogare = Content.Load<SpriteFont>("renogare");
 
@@ -172,6 +183,23 @@ namespace CannonShooter
             {
                 _players[_currentPlayer].Power = 0;
             }
+
+            if(keyboardState.IsKeyDown(Keys.Enter) || keyboardState.IsKeyDown(Keys.Space))
+            {
+                _rocketFlying = true;
+                _rocketPosition = _players[_currentPlayer].Position;
+                _rocketPosition.X += 20;
+                _rocketPosition.Y -= 10;
+                _rocketAngle = _players[_currentPlayer].Angle;
+
+                Vector2 up = new Vector2(0, -1);
+
+                Matrix rotMatrix = Matrix.CreateRotationZ(_rocketAngle);
+
+                _rocketDirection = Vector2.Transform(up, rotMatrix);
+
+                _rocketDirection *= _players[_currentPlayer].Power / 50f;
+            }
         }
 
 
@@ -183,6 +211,7 @@ namespace CannonShooter
             _spriteBatch.Begin();
             DrawScenery();
             DrawPlayers();
+            DrawRocket();
 
             PlayerData currentPlayer = _players[_currentPlayer];
             float angle = (float)Math.Round(MathHelper.ToDegrees(currentPlayer.Angle));
@@ -225,6 +254,15 @@ namespace CannonShooter
         private void DrawText(string message, Vector2 position, Color textColor)
         {
             _spriteBatch.DrawString(_renogare, message, position, textColor);
+        }
+
+        private void DrawRocket()
+        {
+            if(_rocketFlying)
+            {
+                _spriteBatch.Draw(_rocketTexture, _rocketPosition, null, _players[_currentPlayer].PlayerColor,
+                    _rocketAngle, new Vector2(42, 240), _rocketScaling, SpriteEffects.None, 1);
+            }
         }
     }
 }
