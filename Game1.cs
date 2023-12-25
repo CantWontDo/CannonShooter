@@ -2,6 +2,8 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using ParticleEngine;
+using System.Collections.Generic;
 
 namespace CannonShooter
 {
@@ -26,6 +28,15 @@ namespace CannonShooter
         private Texture2D _carriageTexture;
         private Texture2D _cannonTexture;
 
+        private Texture2D _smoke;
+        private Texture2D _smoke2;
+        private Texture2D _smoke3;
+        private Texture2D _smoke4;
+        private Texture2D _smoke5;
+        private Texture2D _smoke6;
+        private Texture2D _smoke7;
+        private Texture2D _smoke8;
+
         private Texture2D _rocketTexture;
 
         private bool _rocketFlying = false;
@@ -45,6 +56,8 @@ namespace CannonShooter
         private int _currentPlayer = 0;
 
         private float _playerScaling;
+
+        private ParticleSystem _smokeTrail;
 
         private Color[] _playerColors = new Color[10]
         {
@@ -110,6 +123,25 @@ namespace CannonShooter
 
             _rocketTexture = Content.Load<Texture2D>("rocket");
 
+            _smoke = Content.Load<Texture2D>("smoke");
+            _smoke2 = Content.Load<Texture2D>("smoke_04");
+            _smoke3 = Content.Load<Texture2D>("smoke_05");
+            _smoke4 = Content.Load<Texture2D>("smoke_06");
+            _smoke5 = Content.Load<Texture2D>("smoke_07");
+            _smoke6 = Content.Load<Texture2D>("smoke_08");
+            _smoke7 = Content.Load<Texture2D>("smoke_09");
+            _smoke8 = Content.Load<Texture2D>("smoke_10");
+
+            List<Texture2D> smokeTextures = new List<Texture2D>();
+            smokeTextures.Add(_smoke);
+            smokeTextures.Add(_smoke2);
+            smokeTextures.Add(_smoke3);
+            smokeTextures.Add(_smoke4);
+            smokeTextures.Add(_smoke5);
+            smokeTextures.Add(_smoke6);
+            smokeTextures.Add(_smoke7);
+            smokeTextures.Add(_smoke8);
+
             _renogare = Content.Load<SpriteFont>("renogare");
 
             _screenHeight = _graphics.PreferredBackBufferHeight;
@@ -118,7 +150,7 @@ namespace CannonShooter
             SetUpPlayers();
 
             _playerScaling = 40f / (float)_carriageTexture.Width;
-
+            _smokeTrail = new ParticleSystem(3, _rocketPosition, smokeTextures);
             // TODO: use this.Content to load your game content here
         }
 
@@ -129,7 +161,26 @@ namespace CannonShooter
 
             // TODO: Add your update logic here
             ProcessInput();
+            UpdateRocket();
             base.Update(gameTime);
+        }
+
+        private void UpdateRocket()
+        {
+            Vector2 gravity = new Vector2(0, 1);
+            if(_rocketFlying)
+            {
+              
+                _rocketDirection += gravity / 10;
+                int sign = Math.Sign(_rocketDirection.Y);
+                _smokeTrail.Direction = sign;
+                _rocketAngle = (float)Math.Atan2(_rocketDirection.X, -_rocketDirection.Y);
+                _rocketPosition += _rocketDirection;
+
+                _smokeTrail.EmitterLocation = _rocketPosition;
+                _smokeTrail.Update();
+
+            }
         }
 
         private void ProcessInput()
@@ -262,6 +313,7 @@ namespace CannonShooter
             {
                 _spriteBatch.Draw(_rocketTexture, _rocketPosition, null, _players[_currentPlayer].PlayerColor,
                     _rocketAngle, new Vector2(42, 240), _rocketScaling, SpriteEffects.None, 1);
+                _smokeTrail.Draw(_spriteBatch);
             }
         }
     }
